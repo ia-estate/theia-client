@@ -30,6 +30,7 @@ export default defineComponent({
       switchModal,
       switchChat,
       switchMenu,
+      switchScrap,
     };
   },
   data() {
