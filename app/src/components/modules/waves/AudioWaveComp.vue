@@ -53,7 +53,6 @@
 import { defineComponent, onMounted, ref, Ref } from "vue";
 import WaveSurfer from "wavesurfer.js";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js";
-import url from "./../../../assets/sounds/voice-1.mp3";
 
 export default defineComponent({
   name: "AudioWave",
@@ -73,9 +72,11 @@ export default defineComponent({
     const isPlaying = ref(false);
     const ms = 3000;
     let wave: WaveSurfer;
+    let url =
+      "https://peregrine-results.s3.amazonaws.com/pigeon/8CCgMLeZiZnzrrELvl_0.mp3";
+    const audio = new Audio(url);
 
     onMounted(() => {
-      const audio = new Audio(url);
       wave = WaveSurfer.create({
         container: "#waveform",
         waveColor: "violet",
