@@ -125,266 +125,286 @@
   </div>
 </template>
 <script lang="ts">
-  console.clear();
-
 import { gsap } from "gsap";
 import imagesLoaded from "imagesloaded";
+import { defineComponent } from "vue";
 
 interface Buttons {
   prev: HTMLElement;
   next: HTMLElement;
 }
+export default defineComponent({
+  setup() {
+    const buttons: Buttons = {
+      prev: document.querySelector(".btn--left")!,
+      next: document.querySelector(".btn--right")!,
+    };
+    const cardsContainerEl = document.querySelector(".cards__wrapper")!;
+    const appBgContainerEl = document.querySelector(".app__bg")!;
 
-const buttons: Buttons = {
-  prev: document.querySelector(".btn--left")!,
-  next: document.querySelector(".btn--right")!,
-};
-const cardsContainerEl = document.querySelector(".cards__wrapper")!;
-const appBgContainerEl = document.querySelector(".app__bg")!;
+    const cardInfosContainerEl = document.querySelector(".info__wrapper")!;
 
-const cardInfosContainerEl = document.querySelector(".info__wrapper")!;
+    buttons.next.addEventListener("click", () => swapCards("right"));
 
-buttons.next.addEventListener("click", () => swapCards("right"));
+    buttons.prev.addEventListener("click", () => swapCards("left"));
 
-buttons.prev.addEventListener("click", () => swapCards("left"));
+    function swapCards(direction: string): void {
+      const currentCardEl = cardsContainerEl.querySelector(".current--card")!;
+      const previousCardEl = cardsContainerEl.querySelector(".previous--card")!;
+      const nextCardEl = cardsContainerEl.querySelector(".next--card")!;
 
-function swapCards(direction: string): void {
-  const currentCardEl = cardsContainerEl.querySelector(".current--card")!;
-  const previousCardEl = cardsContainerEl.querySelector(".previous--card")!;
-  const nextCardEl = cardsContainerEl.querySelector(".next--card")!;
+      const currentBgImageEl =
+        appBgContainerEl.querySelector(".current--image")!;
+      const previousBgImageEl =
+        appBgContainerEl.querySelector(".previous--image")!;
+      const nextBgImageEl = appBgContainerEl.querySelector(".next--image")!;
 
-  const currentBgImageEl = appBgContainerEl.querySelector(".current--image")!;
-  const previousBgImageEl = appBgContainerEl.querySelector(".previous--image")!;
-  const nextBgImageEl = appBgContainerEl.querySelector(".next--image")!;
+      changeInfo(direction);
+      swapCardsClass();
 
-  changeInfo(direction);
-  swapCardsClass();
+      removeCardEvents(currentCardEl);
 
-  removeCardEvents(currentCardEl);
+      function swapCardsClass(): void {
+        currentCardEl.classList.remove("current--card");
+        previousCardEl.classList.remove("previous--card");
+        nextCardEl.classList.remove("next--card");
 
-  function swapCardsClass(): void {
-    currentCardEl.classList.remove("current--card");
-    previousCardEl.classList.remove("previous--card");
-    nextCardEl.classList.remove("next--card");
+        currentBgImageEl.classList.remove("current--image");
+        previousBgImageEl.classList.remove("previous--image");
+        nextBgImageEl.classList.remove("next--image");
 
-    currentBgImageEl.classList.remove("current--image");
-    previousBgImageEl.classList.remove("previous--image");
-    nextBgImageEl.classList.remove("next--image");
+        currentCardEl.classList.add("z-50");
+        currentBgImageEl.classList.add("-z-20");
 
-    currentCardEl.classList.add("z-50");
-    currentBgImageEl.classList.add("-z-20");
+        if (direction === "right") {
+          previousCardEl.classList.add("z-20");
+          nextCardEl.classList.add("z-30");
 
-    if (direction === "right") {
-      previousCardEl.classList.add("z-20");
-      nextCardEl.classList.add("z-30");
+          nextBgImageEl.classList.add("-z-10");
 
-      nextBgImageEl.classList.add("-z-10");
+          currentCardEl.classList.add("previous--card");
+          previousCardEl.classList.add("next--card");
+          nextCardEl.classList.add("current--card");
 
-      currentCardEl.classList.add("previous--card");
-      previousCardEl.classList.add("next--card");
-      nextCardEl.classList.add("current--card");
+          currentBgImageEl.classList.add("previous--image");
+          previousBgImageEl.classList.add("next--image");
+          nextBgImageEl.classList.add("current--image");
+        } else if (direction === "left") {
+          previousCardEl.classList.add("z-30");
+          nextCardEl.classList.add("z-20");
 
-      currentBgImageEl.classList.add("previous--image");
-      previousBgImageEl.classList.add("next--image");
-      nextBgImageEl.classList.add("current--image");
-    } else if (direction === "left") {
-      previousCardEl.classList.add("z-30");
-      nextCardEl.classList.add("z-20");
+          previousBgImageEl.classList.add("-z-10");
 
-      previousBgImageEl.classList.add("-z-10");
+          currentCardEl.classList.add("next--card");
+          previousCardEl.classList.add("current--card");
+          nextCardEl.classList.add("previous--card");
 
-      currentCardEl.classList.add("next--card");
-      previousCardEl.classList.add("current--card");
-      nextCardEl.classList.add("previous--card");
-
-      currentBgImageEl.classList.add("next--image");
-      previousBgImageEl.classList.add("current--image");
-      nextBgImageEl.classList.add("previous--image");
-    }
-  }
-  function changeInfo(direction: string) {
-	let currentInfoEl = cardInfosContainerEl.querySelector(".current--info");
-	let previousInfoEl = cardInfosContainerEl.querySelector(".previous--info");
-	let nextInfoEl = cardInfosContainerEl.querySelector(".next--info");
-
-	if (currentInfoEl) {
-		gsap.timeline()
-			.to([buttons.prev, buttons.next], {
-			duration: 0.2,
-			opacity: 0.5,
-			pointerEvents: "none",
-		})
-			.to(
-			currentInfoEl.querySelectorAll(".text"),
-			{
-				duration: 0.4,
-				stagger: 0.1,
-				translateY: "-120px",
-				opacity: 0,
-			},
-			"-="
-		)
-			.call(() => {
-			swapInfosClass(direction);
-		})
-			.call(() => initCardEvents())
-			.fromTo(
-			direction === "right"
-			? nextInfoEl!.querySelectorAll(".text")
-			: previousInfoEl!.querySelectorAll(".text"),
-			{
-				opacity: 0,
-				translateY: "40px",
-			},
-			{
-				duration: 0.4,
-				stagger: 0.1,
-				translateY: "0px",
-				opacity: 1,
-			}
-		)
-			.to([buttons.prev, buttons.next], {
-			duration: 0.2,
-			opacity: 1,
-			pointerEvents: "all",
-		});
-	}
-
-	function swapInfosClass(direction: string) {
-		currentInfoEl?.classList.remove("current--info");
-		previousInfoEl?.classList.remove("previous--info");
-		nextInfoEl?.classList.remove("next--info");
-
-		if (direction === "right") {
-			currentInfoEl?.classList.add("previous--info");
-			nextInfoEl?.classList.add("current--info");
-			previousInfoEl?.classList.add("next--info");
-		} else if (direction === "left") {
-			currentInfoEl?.classList.add("next--info");
-			nextInfoEl?.classList.add("previous--info");
-			previousInfoEl?.classList.add("current--info");
-		}
-	}
-}
-
-function updateCard(e: any) {
-	const card = e.currentTarget;
-	const box = card.getBoundingClientRect();
-	const centerPosition = {
-		x: box.left + box.width / 2,
-		y: box.top + box.height / 2,
-	};
-	let angle = Math.atan2(e.pageX - centerPosition.x, 0) * (35 / Math.PI);
-	gsap.set(card, {
-		"--current-card-rotation-offset": `${angle}deg`,
-	});
-	const currentInfoEl = cardInfosContainerEl.querySelector(".current--info");
-	gsap.set(currentInfoEl, {
-		rotateY: `${angle}deg`,
-	});
-}
-
-function resetCardTransforms(e: any) {
-	const card = e.currentTarget;
-	const currentInfoEl = cardInfosContainerEl.querySelector(".current--info");
-	gsap.set(card, {
-		"--current-card-rotation-offset": 0,
-	});
-	gsap.set(currentInfoEl, {
-		rotateY: 0,
-	});
-}
-
-function initCardEvents() {
-	const currentCardEl = cardsContainerEl.querySelector(".current--card");
-	currentCardEl?.addEventListener("pointermove", updateCard);
-	currentCardEl?.addEventListener("pointerout", (e) => {
-		resetCardTransforms(e);
-	});
-}
-
-initCardEvents();
-
-function removeCardEvents(card: any) {
-	card.removeEventListener("pointermove", updateCard);
-}
-function init() {
-  let tl = gsap.timeline();
-  
-  tl.to(cardsContainerEl.children, {
-    delay: 0.15,
-    duration: 0.5,
-    stagger: {
-      ease: "power4.inOut",
-      from: "start",
-      amount: 0.1,
-    },
-    "--card-translateY-offset": "0%",
-  })
-    .to(cardInfosContainerEl.querySelector(".current--info")!.querySelectorAll(".text"), {
-      delay: 0.5,
-      duration: 0.4,
-      stagger: 0.1,
-      opacity: 1,
-      translateY: 0,
-    })
-    .to(
-      [buttons.prev, buttons.next],
-      {
-        duration: 0.4,
-        opacity: 1,
-        pointerEvents: "all",
-      },
-      "-=0.4"
-    );
-}
-
-const waitForImages = () => {
-  const images = [...document.querySelectorAll("img")];
-  const totalImages = images.length;
-  let loadedImages = 0;
-  const loaderEl = document.querySelector(".loader span");
-
-  gsap.set(cardsContainerEl.children, {
-    "--card-translateY-offset": "100vh",
-  });
-  gsap.set(cardInfosContainerEl.querySelector(".current--info")!.querySelectorAll(".text"), {
-    translateY: "40px",
-    opacity: 0,
-  });
-  gsap.set([buttons.prev, buttons.next], {
-    pointerEvents: "none",
-    opacity: "0",
-  });
-
-  images.forEach((image) => {
-    imagesLoaded(image, (instance: any) => {
-      if (instance.isComplete) {
-        loadedImages++;
-        let loadProgress = loadedImages / totalImages;
-
-        gsap.to(loaderEl, {
-          duration: 1,
-          scaleX: loadProgress,
-          backgroundColor: `hsl(${loadProgress * 120}, 100%, 50%`,
-        });
-
-        if (totalImages == loadedImages) {
-          gsap.timeline()
-            .to(".loading__wrapper", {
-              duration: 0.8,
-              opacity: 0,
-              pointerEvents: "none",
-            })
-            .call(() => init());
+          currentBgImageEl.classList.add("next--image");
+          previousBgImageEl.classList.add("current--image");
+          nextBgImageEl.classList.add("previous--image");
         }
       }
-    });
-  });
-};
-  
-waitForImages();
-}
+      function changeInfo(direction: string) {
+        let currentInfoEl =
+          cardInfosContainerEl.querySelector(".current--info");
+        let previousInfoEl =
+          cardInfosContainerEl.querySelector(".previous--info");
+        let nextInfoEl = cardInfosContainerEl.querySelector(".next--info");
+
+        if (currentInfoEl) {
+          gsap
+            .timeline()
+            .to([buttons.prev, buttons.next], {
+              duration: 0.2,
+              opacity: 0.5,
+              pointerEvents: "none",
+            })
+            .to(
+              currentInfoEl.querySelectorAll(".text"),
+              {
+                duration: 0.4,
+                stagger: 0.1,
+                translateY: "-120px",
+                opacity: 0,
+              },
+              "-="
+            )
+            .call(() => {
+              swapInfosClass(direction);
+            })
+            .call(() => initCardEvents())
+            .fromTo(
+              direction === "right"
+                ? nextInfoEl!.querySelectorAll(".text")
+                : previousInfoEl!.querySelectorAll(".text"),
+              {
+                opacity: 0,
+                translateY: "40px",
+              },
+              {
+                duration: 0.4,
+                stagger: 0.1,
+                translateY: "0px",
+                opacity: 1,
+              }
+            )
+            .to([buttons.prev, buttons.next], {
+              duration: 0.2,
+              opacity: 1,
+              pointerEvents: "all",
+            });
+        }
+
+        function swapInfosClass(direction: string) {
+          currentInfoEl?.classList.remove("current--info");
+          previousInfoEl?.classList.remove("previous--info");
+          nextInfoEl?.classList.remove("next--info");
+
+          if (direction === "right") {
+            currentInfoEl?.classList.add("previous--info");
+            nextInfoEl?.classList.add("current--info");
+            previousInfoEl?.classList.add("next--info");
+          } else if (direction === "left") {
+            currentInfoEl?.classList.add("next--info");
+            nextInfoEl?.classList.add("previous--info");
+            previousInfoEl?.classList.add("current--info");
+          }
+        }
+      }
+
+      function updateCard(e: any) {
+        const card = e.currentTarget;
+        const box = card.getBoundingClientRect();
+        const centerPosition = {
+          x: box.left + box.width / 2,
+          y: box.top + box.height / 2,
+        };
+        let angle = Math.atan2(e.pageX - centerPosition.x, 0) * (35 / Math.PI);
+        gsap.set(card, {
+          "--current-card-rotation-offset": `${angle}deg`,
+        });
+        const currentInfoEl =
+          cardInfosContainerEl.querySelector(".current--info");
+        gsap.set(currentInfoEl, {
+          rotateY: `${angle}deg`,
+        });
+      }
+
+      function resetCardTransforms(e: any) {
+        const card = e.currentTarget;
+        const currentInfoEl =
+          cardInfosContainerEl.querySelector(".current--info");
+        gsap.set(card, {
+          "--current-card-rotation-offset": 0,
+        });
+        gsap.set(currentInfoEl, {
+          rotateY: 0,
+        });
+      }
+
+      function initCardEvents() {
+        const currentCardEl = cardsContainerEl.querySelector(".current--card");
+        currentCardEl?.addEventListener("pointermove", updateCard);
+        currentCardEl?.addEventListener("pointerout", (e) => {
+          resetCardTransforms(e);
+        });
+      }
+
+      initCardEvents();
+
+      function removeCardEvents(card: any) {
+        card.removeEventListener("pointermove", updateCard);
+      }
+      function init() {
+        let tl = gsap.timeline();
+
+        tl.to(cardsContainerEl.children, {
+          delay: 0.15,
+          duration: 0.5,
+          stagger: {
+            ease: "power4.inOut",
+            from: "start",
+            amount: 0.1,
+          },
+          "--card-translateY-offset": "0%",
+        })
+          .to(
+            cardInfosContainerEl
+              .querySelector(".current--info")!
+              .querySelectorAll(".text"),
+            {
+              delay: 0.5,
+              duration: 0.4,
+              stagger: 0.1,
+              opacity: 1,
+              translateY: 0,
+            }
+          )
+          .to(
+            [buttons.prev, buttons.next],
+            {
+              duration: 0.4,
+              opacity: 1,
+              pointerEvents: "all",
+            },
+            "-=0.4"
+          );
+      }
+
+      const waitForImages = () => {
+        const images = [...document.querySelectorAll("img")];
+        const totalImages = images.length;
+        let loadedImages = 0;
+        const loaderEl = document.querySelector(".loader span");
+
+        gsap.set(cardsContainerEl.children, {
+          "--card-translateY-offset": "100vh",
+        });
+        gsap.set(
+          cardInfosContainerEl
+            .querySelector(".current--info")!
+            .querySelectorAll(".text"),
+          {
+            translateY: "40px",
+            opacity: 0,
+          }
+        );
+        gsap.set([buttons.prev, buttons.next], {
+          pointerEvents: "none",
+          opacity: "0",
+        });
+
+        images.forEach((image) => {
+          imagesLoaded(image, (instance: any) => {
+            if (instance.isComplete) {
+              loadedImages++;
+              let loadProgress = loadedImages / totalImages;
+
+              gsap.to(loaderEl, {
+                duration: 1,
+                scaleX: loadProgress,
+                backgroundColor: `hsl(${loadProgress * 120}, 100%, 50%`,
+              });
+
+              if (totalImages == loadedImages) {
+                gsap
+                  .timeline()
+                  .to(".loading__wrapper", {
+                    duration: 0.8,
+                    opacity: 0,
+                    pointerEvents: "none",
+                  })
+                  .call(() => init());
+              }
+            }
+          });
+        });
+      };
+
+      waitForImages();
+    }
+  },
+});
 </script>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap");

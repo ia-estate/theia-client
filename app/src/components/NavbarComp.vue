@@ -30,7 +30,7 @@ export default defineComponent({
       switchModal,
       switchChat,
       switchMenu,
-      switchScrap
+      switchScrap,
     };
   },
   data() {
@@ -42,6 +42,7 @@ export default defineComponent({
       email: require("../assets/img/svg/mail-white.svg"),
       unread: require("../assets/img/svg/mark-unread-white.svg"),
       social: require("../assets/img/svg/groups-white.svg"),
+      building: require("../assets/img/svg/building.svg"),
     };
   },
 });
@@ -82,8 +83,8 @@ export default defineComponent({
           </button>
         </div>
         <div>
-          <button id="showsocial" class="mx-3" @click="switchMenu">
-            <img :src="social" alt="social" />
+          <button id="showscrap" class="mx-3" @click="switchScrap">
+            <img :src="building" alt="social" />
           </button>
         </div>
       </div>
