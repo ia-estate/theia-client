@@ -50,6 +50,7 @@ const useStore = defineStore("main", {
       // modals
       loginModal: false,
       settingsModal: false,
+      realEstateModal: false,
       // avatar
       vecColor1: "vec3(0.7, 0, 1)",
       vecColor2: "vec3(0.89, 0.6, 0)",

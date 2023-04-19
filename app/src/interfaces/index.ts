@@ -44,6 +44,7 @@ export interface State {
   // modals
   loginModal: boolean;
   settingsModal: boolean;
+  realEstateModal: boolean;
   // signup
   welcome: boolean;
   newUser: boolean;

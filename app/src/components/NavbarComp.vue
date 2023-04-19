@@ -1,11 +1,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SettingsModal from "./modules/modals/SettingsModal.vue";
+import RealEstateModal from "./modules/modals/RealEstateModal.vue";
 import useStore from "../services/store";
 
 export default defineComponent({
   components: {
     SettingsModal,
+    RealEstateModal,
   },
   setup() {
     const store = useStore();
@@ -20,7 +22,9 @@ export default defineComponent({
       store.showMenu = !store.showMenu;
       store.showChat = false;
     };
-
+    const switchScrap = () => {
+      store.realEstateModal = !store.realEstateModal;
+    };
     return {
       store,
       switchModal,
